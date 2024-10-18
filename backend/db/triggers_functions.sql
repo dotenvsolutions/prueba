@@ -4,12 +4,24 @@ CREATE OR REPLACE FUNCTION log_session_user()
   AS
 $$
 BEGIN
-  SELECT COUNT(*) FROM "Sessions" WHERE userId = NEW."idUsuario" AND "FechaIngreso" = NOW();
-  IF NEW.price <> OLD.price THEN
-  INSERT INTO product_price_changes(product_id,old_price,new_price,changed_on)
-  VALUES(OLD.id,OLD.price,NEW.price,now());
-  END IF;
+  IF NOT EXISTS (
+        SELECT 1
+        FROM "Sessions"
+        WHERE "userId" = NEW.idUsuario
+    ) THEN
+        -- Si no existe, crea una nueva sesión con la fecha actual
+        INSERT INTO "Sessions" ("userId", "FechaInicio")
+        VALUES (NEW.idUsuario, NOW());
+    END IF;
+    
+    -- Retorna la fila que fue insertada/modificada en la tabla usuarios
+    RETURN NEW;
 
 RETURN NEW;
 END;
 $$
+
+CREATE TRIGGER crear_sesion_trigger
+AFTER INSERT ON "Usuarios"
+FOR EACH ROW
+EXECUTE FUNCTION crear_sesion_si_no_existe();
