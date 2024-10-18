@@ -6,6 +6,7 @@ const router = Router();
 
 router.get('/',UserController.fetAll)
 router.post('/create', UserController.store)
+router.post('/update/:id', UserController.update)
 router.post('/login', UserController.loginUser)
 
 
