@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Usuarios {
+  idUsuario Int @id @default(autoincrement())
+  Username String @db.VarChar(50)
+  Password String @db.VarChar(50)
+  Mail String @unique @db.VarChar(120)
+  SessionActive String ? @db.Char(2)
+  Status String ? @db.Char(1)
+  roles Rol_usuarios[]
+  personas Persona? 
+  sesiones Sessions[] 
+}
+
+model Rol {
+  idRol Int @id @default(autoincrement())
+  RolName String @db.VarChar(50)
+  roles Rol_usuarios[]
+}
+
+model Rol_usuarios {
+  user Usuarios @relation(fields: [userId], references: [idUsuario])
+  userId Int  
+  roles Rol @relation(fields: [rolId], references: [idRol])
+  rolId Int
+  @@id([userId,rolId])
+}
+
+model Persona {
+  idPersona Int @id @default(autoincrement())
+  Nombres String @db.VarChar(80)
+  Apellidos String ? @db.VarChar(80)
+  Identificacion String @db.VarChar(10)
+  FechaNacimiento DateTime ?
+  Movil String ? @db.VarChar(25)
+  Fijo String ? @db.VarChar(25)
+  direccion String ? @db.VarChar(200)
+  user Usuarios @relation(fields: [userId], references: [idUsuario])
+  userId Int @unique
+}
+
+model Sessions {
+  idSesion Int @id @default(autoincrement())
+  FechaIngreso DateTime ? 
+  FechaCierre DateTime ?
+  user Usuarios @relation(fields: [userId], references: [idUsuario])
+  userId Int 
+}
