@@ -79,4 +79,11 @@ export default class UserService {
     async fetchById(id) {
         return await this.userRepository.fetUserById(id)
     }
+    async logOut(id,sessionId){
+        return await this.userRepository.logOutUser(id,sessionId)
+    }
+
+    async generate(data) {
+        return await this.userRepository.storeMasiveUsers(data)
+    }
 }

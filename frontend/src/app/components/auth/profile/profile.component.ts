@@ -16,6 +16,7 @@ import {FormBuilder,FormGroup, ReactiveFormsModule, Validators} from '@angular/f
 import { MatFormField, MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { fakerES_MX as faker  } from '@faker-js/faker';
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -27,9 +28,12 @@ export class ProfileComponent implements OnInit{
   dataUser:any = {}
   userData: any = {}
   excelData: any[] = [];
+  generateExcel: any[] = [];
   fileName: string = 'prueba.xlsx'
   getListUsers: Array<any>[] = []
-  displayedColumns: string[] = ['nombres','apellidos','identificacion','movil','fijo','rol'];
+  errorSession: boolean = false
+  errorMsg: string = ''
+  displayedColumns: string[] = ['nombres','apellidos','identificacion','usuario','email','movil','fijo','rol'];
   listaRoles = [
     { id: 1, label: 'Male' },
     { id: 2, label: 'Female' },
@@ -76,7 +80,7 @@ export class ProfileComponent implements OnInit{
       direccion : this.dataUser.direccion,
       rol: this.dataUser.rol
     })
-    
+   
 
   }
 
@@ -90,9 +94,50 @@ export class ProfileComponent implements OnInit{
       direccion: this.formProfile.value.direccion,
       rol: this.formProfile.value.rol
     }
-    console.log(this.dataUser)
-    this.access.updateDatauser(this.dataUser.id, prifileData).subscribe(response=>{
-        
+     
+    this.access.updateDatauser(this.dataUser.id, prifileData).subscribe({
+      next: response=>{
+        const {success,msg} = response
+        if(success){
+          
+          localStorage.setItem('user', JSON.stringify({
+            id:this.userData.id,
+            name:prifileData.nombre,
+            lastname: prifileData.apellido,
+            dni:prifileData.cedula,
+            movil:prifileData.movil,
+            fijo:prifileData.fijo,
+            direccion:prifileData.direccion,
+            rol: prifileData.rol,
+            rolName: this.userData.rolName,
+            email:this.userData.email,
+            username: this.userData.username
+          }))
+          this.formProfile = this.fb.group({
+            nombre: this.dataUser.name,
+            apellido: !this.dataUser.lastname ? '' : this.dataUser.lastname,
+            cedula: !this.dataUser.dni ? '' : this.dataUser.dni,
+            movil: this.dataUser.movil,
+            fijo: this.dataUser.fijo,
+            direccion : this.dataUser.direccion,
+            rol: this.dataUser.rol
+          })
+        } 
+      },error: (error) => {
+        this.errorSession = true
+        this.errorMsg = error.error.msg
+      }
+    })
+  }
+
+  logOutUser() {
+    this.access.logOutUser(this.dataUser.id,this.dataUser.sessionId).subscribe({
+      next: (data) => {
+        console.log(data)
+      },
+      error: (error) => {
+
+      }
     })
   }
 
@@ -104,28 +149,49 @@ export class ProfileComponent implements OnInit{
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
       this.excelData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+      this.access.createMasiveUsers(this.excelData).subscribe({
+        next: (data)=>{
+          console.log(data)
+        },
+        error:(error)=>{
+
+        }
+      })
     };
     reader.readAsBinaryString(file);
   }
 
+  generarRolAleatorio(roles: any[]) {
+    const rolAleatorio = faker.helpers.arrayElement(roles);
+      return rolAleatorio;
+  }
+
   exportExcel() {
-    this.excelData = []
-    this.excelData.push({
-      'nombre': '',
-      'apellido': '',
-      'cedula': '',
-      'movil': '',
-      'fijo': '',
-      'rol': ''
-    })
-    console.log(this.excelData)
-    const ws: XLSX.WorkSheet =XLSX.utils.json_to_sheet(this.excelData);
+    this.generateExcel = []
+    
+    for(let i = 1; i <= 500; i++){
+      this.generateExcel.push({
+        'nombre': faker.person.firstName(),
+        'apellido': faker.person.lastName(),
+        'cedula': faker.string.numeric({ length: { min: 10, max: 10 } }),
+        'movil': faker.phone.number({ style: 'human' }),
+        'fijo': faker.phone.number({ style: 'human' }),
+        'username': faker.internet.userName(),
+        'password': faker.internet.password(),
+        'email': faker.internet.email(),
+        'status': 'A',
+        'rol': this.generarRolAleatorio(['ADMINISTRADOR', 'SECRETARIA', 'OPERADOR'])
+      })
+    }
+    
+    //console.log(this.generateExcel)
+    const ws: XLSX.WorkSheet =XLSX.utils.json_to_sheet(this.generateExcel);
  
     /* generate workbook and add the worksheet */
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
   
     XLSX.utils.book_append_sheet(wb, ws, "Carga de Informacion");
-    XLSX.utils.sheet_add_aoa(ws, [["NOMBRE", "APELLIDO", "CEDULA", "MOVIL", "FIJO","ROL"]], { origin: "A1" });
+    XLSX.utils.sheet_add_aoa(ws, [["NOMBRE", "APELLIDO", "CEDULA", "MOVIL", "FIJO","USUARIO","PASSWORD","EMAIL","STATUS","ROL"]], { origin: "A1" });
     XLSX.writeFile(wb, this.fileName);
   }
 }

@@ -141,7 +141,8 @@ export default class UserRepository {
                 direccion:user.personas.direccion,
                 'email':user.Mail,
                 'rol':user.roles[0].rolId,
-                'rolName':user.roles[0].RolName
+                'rolName':user.roles[0].RolName,
+                'sessionId':registerSesionUser.idSesion
             }}
         } catch (error) {
             return { success: false, msg: error.message };
@@ -263,6 +264,79 @@ export default class UserRepository {
         } catch (error) {
             console.log(error)
             return { success: false, msg: error.message };
+        }
+    }
+
+    async logOutUser(id,sessionId){
+        try {
+            const startOfToday = new Date();
+            startOfToday.setHours(0, 0, 0, 0);   
+
+            const endOfToday = new Date();
+            endOfToday.setHours(23, 59, 59, 999)
+
+            const user = await this.prisma.Sessions.update({
+                'where': { 
+                    'userId': parseInt(id),
+                    'idSesion': parseInt(sessionId)
+                },
+                'data': {
+                        'FechaCierre': new Date()
+                    }
+            })
+            if(!user){
+                return {'success':false,'msg':'No se ha podido registrar la salida'} 
+            }
+            return {'success':true,'msg':'usuario finalizo su sesion correctamente'} 
+        } catch (error) {
+            console.log(error)
+            return { success: false, msg: error.message };
+        }
+    }
+
+    async storeMasiveUsers(data){
+        if(data.length>0){
+            data.forEach(async e => {
+                const checkUser =  await this.prisma.Usuarios.findUnique({
+                    'where': { 
+                        'Mail': e.EMAIL 
+                    },
+                })
+                if(!checkUser){
+                    const getRol = await this.prisma.Rol.findFirst({
+                        where:{
+                            RolName:e.ROL
+                        }
+                    })
+                    const newUser = await this.prisma.Usuarios.create({
+                        'data': {
+                            'Username': e.USERNAME,
+                            'Password': await Utilities.encrypUserPassword(e.PASSWORD),
+                            'Mail': e.EMAIL,
+                            'Status': 'A',
+                            'personas': {
+                                'create': {
+                                    'Nombres': e.NOMBRE,
+                                    'Apellidos': e.APELLIDO,
+                                    'Identificacion': e.CEDULA,
+                                    'Movil': e.MOVIL,
+                                    'Fijo': e.FIJO,
+                                    'direccion': e.DIRECCION
+                                }
+                            },
+                            "roles": {
+                                'create': {
+                                    'rolId': !rol ? 1: rol.idRol
+                                }
+                            }
+                        }
+                    })
+                    if(!newUser){
+                        return {'success':false, msg:'No se ha podido crear el nuevo usuario: '+e.NOMBRE}
+                    }
+                }   
+            });
+            return {'success':true, 'msg': 'Usuario creado con exito' };
         }
     }
 }

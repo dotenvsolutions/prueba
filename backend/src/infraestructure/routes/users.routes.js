@@ -94,5 +94,36 @@ router.delete('/delete/:id', [authJwt.verifyToken], async (req, res) => {
     
 })
 
+router.post('/logout', [authJwt.verifyToken], async (req, res) => {
+    try {
+        const {id,sessionId}= req.body
+        const singLigout = await uService.logOut(id,sessionId)
+        if(!singLigout.success){
+            console.log(singLigout)
+            return res.status(401).json(singLigout)
+        }
+        res.status(201).json(singLigout)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, error: error.message });
+    }
+})
+
+
+router.post('/generate', async (req, res) => {
+    try {
+        console.log(req.body)
+        const users = await uService.generate(req.body)
+        
+        if(!users.success){
+            return res.status(401).json(users)
+        }
+        res.json(users)
+    } catch (error) {
+        console.log(error)
+        res.status(401).json({ success: false, error: error.message });
+    }
+    
+})
 
 export default router 

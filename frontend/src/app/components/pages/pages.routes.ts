@@ -4,6 +4,7 @@ import { LoginComponent } from '../auth/login/login.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ProfileComponent } from '../auth/profile/profile.component';
+import { LogoutComponent } from '../auth/logout/logout.component';
  
 const pagesRoutes: Routes = [
     {
@@ -23,6 +24,11 @@ const pagesRoutes: Routes = [
     {
         path: 'profile',
         component:ProfileComponent,
+        canActivate: [sessionGuard]
+    },
+    {
+        path:'logout',
+        component: LogoutComponent,
         canActivate: [sessionGuard]
     },
     {
