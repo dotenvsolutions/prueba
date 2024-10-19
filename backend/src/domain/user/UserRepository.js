@@ -130,7 +130,19 @@ export default class UserRepository {
             if(!registerSesionUser)
                 return {'success':false,'msg':'No se ha podido iniciar sesion'} 
 
-            return {'success':true, 'msg': 'Sesion Iniciada', 'token':jwToken, 'data': {'username':user.Username,name:user.personas.Nombres,lastname:user.personas.Apellidos,dni:user.personas.Identificacion,'email':user.Mail,'rol':user.roles[0].rolId,'rolName':user.roles[0].RolName}}
+            return {'success':true, 'msg': 'Sesion Iniciada', 'token':jwToken, 'data': {
+                id:user.idUsuario,
+                'username':user.Username,
+                name:user.personas.Nombres,
+                lastname:user.personas.Apellidos,
+                dni:user.personas.Identificacion,
+                movil: user.personas.Movil,
+                fijo: user.personas.Fijo,
+                direccion:user.personas.direccion,
+                'email':user.Mail,
+                'rol':user.roles[0].rolId,
+                'rolName':user.roles[0].RolName
+            }}
         } catch (error) {
             return { success: false, msg: error.message };
         }
@@ -214,24 +226,33 @@ export default class UserRepository {
         }
     }
 
-    async updateUser(id, username,password, rol) {
+    async updateUser(id, nombre,lastname,dni,movil,fijo,direccion, rol) {
         try {
             const roles = await this.prisma.Rol_usuarios.update({
                 'where': { 
-                    'userId': parseInt(id),
-                    'data': {
-                        'rolId': parseInt(rol),
+                    userId_rolId: {
+                        userId: parseInt(id),  // Aquí pones el ID del usuario
+                        rolId:parseInt(rol)    // Aquí pones el ID del rol
                     }
+                    
                 },
+                'data': {
+                    'rolId': parseInt(rol),
+                }
             })
     
-            const user = await this.prisma.Usuarios.update({
+            const user = await this.prisma.Persona.update({
                 'where': { 
-                    'idUsuario': parseInt(id),
-                    'data': {
-                        'Username': username,
-                    }
+                    'userId': parseInt(id)
                 },
+                'data': {
+                    'Nombres': nombre,
+                    'Apellidos': lastname,
+                    'Identificacion': dni,
+                    'Movil': movil,
+                    'Fijo': fijo,
+                    'direccion': direccion
+                }
             })
     
             if(!user||!roles){
@@ -240,6 +261,7 @@ export default class UserRepository {
     
             return {'success':true, 'msg': 'Usuario actualizado con exito'};
         } catch (error) {
+            console.log(error)
             return { success: false, msg: error.message };
         }
     }

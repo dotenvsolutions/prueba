@@ -63,9 +63,9 @@ router.post('/login', async (req, res) => {
 
 router.put('/updateUser/:id', [authJwt.verifyToken], async (req, res) => {
     const id = req.params.id
-    const {username,password,rol} = req.body
+    const {nombre,apellido,cedula,movil,fijo,direccion, rol} = req.body
     try {
-        const user = await uService.updateUser(id,username,password, rol)
+        const user = await uService.updateUser(id,nombre,apellido,cedula,movil,fijo,direccion, rol)
         
         if(!user.success){
             return res.status(401).json(user)

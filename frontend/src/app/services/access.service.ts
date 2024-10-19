@@ -29,6 +29,15 @@ export class AccessService {
     )
   }
 
+  getAllUsers(): Observable<any>{
+    return this.http.get(this.serviceUrl).pipe(map((dataRaw: any) => dataRaw ))
+  }
+
+  updateDatauser(id:number,user: any): Observable<ApiResponse>{
+    console.log(id)
+    return this.http.put(this.serviceUrl+'updateUser/'+id, user).pipe(map((dataRaw: any) => dataRaw ))
+  }
+
   isAdmin(): boolean {
     let user:any = localStorage.getItem('user')
     let data = JSON.parse(user)

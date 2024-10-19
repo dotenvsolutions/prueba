@@ -4,12 +4,13 @@ import UserService from "../../application/user/UserService"
 
 export const verifyToken = async (req, res, next) => {
     try {
-        const token = req.headers['Bearer']
+        const token = req.headers['authorization']
+        let cleanToken = token.replace('Bearer ', '');
         const uService = new UserService()
-        if(!token)
+        if(!cleanToken)
             return res.status(403).json({'success':false,msg:'No token provide'})
 
-        const decodeJWT = jwt.verify(token, params.jwt)
+        const decodeJWT = jwt.verify(cleanToken, params.jwt_secret)
         req.idUsuario = decodeJWT.id
         const userById = await uService.fetchById(decodeJWT.id)
         if(!userById)

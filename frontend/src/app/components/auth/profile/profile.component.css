@@ -1,0 +1,48 @@
+h1 {
+    padding: 0 1rem;
+}
+
+h2 {padding: 1rem;}
+
+mat-toolbar{
+    position:relative;
+    top:0;
+    z-index: 5;
+}
+
+mat-sidenav-container {
+    height: calc(100vh - 64px);
+}
+
+
+.content {
+    padding: 24px;
+}
+
+.demo-table {
+    width: 100%;
+  }
+  
+  .demo-button-container {
+    padding-bottom: 16px;
+  }
+  
+  .demo-button + .demo-button {
+    margin-left: 8px;
+  }
+
+.card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 100px;
+}
+
+.form-custom {
+    min-width: 150px;
+    width: 100%;
+}
+
+.input-custom {
+    width: 100%;
+}
