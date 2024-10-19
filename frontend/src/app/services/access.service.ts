@@ -20,7 +20,7 @@ export class AccessService {
     return this.http.post<ApiResponse>(this.serviceUrl+'/login', user).pipe(
       tap((dataRaw:ApiResponse)=>{
         const {success,msg,token,data} = dataRaw
-        console.log(data)
+        //console.log(data)
         this.cookie.set('token',token,1,'/')
         this.currentUserSubject.next(data);
         localStorage.setItem('user', JSON.stringify(data));

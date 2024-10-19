@@ -2,7 +2,7 @@
     <button mat-icon-button aria-label="Menu icon">
         <mat-icon>menu</mat-icon>
     </button>
-    <h1> Welcome</h1>
+    <h1> Usuario: {{dataUser.username}}</h1>
 </mat-toolbar>
 <mat-sidenav-container autosize>
     <mat-sidenav opened="" [style.width]="'250px'" mode="side">
@@ -10,7 +10,26 @@
         <app-sidenav-header/>
     </mat-sidenav>
     <mat-sidenav-content class="content">
-      <h2>Content</h2>
-      <router-outlet></router-outlet>
+        <h2>Bienvenido: {{dataUser.name}}</h2>
+        <mat-card class="example-card" appearance="outlined">
+            <mat-card-header>
+                <div mat-card-avatar class="example-header-image"></div>
+                <mat-card-title>Datos Usuario</mat-card-title>
+                <mat-card-subtitle>{{dataUser.username}}</mat-card-subtitle>
+            </mat-card-header>
+            <img width="250px" mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
+            <mat-card-content>
+                <mat-list role="list">
+                    <mat-list-item role="listitem">ROL: {{dataUser.rolName}}</mat-list-item>
+                    <mat-list-item role="listitem">Ultima Sesion: {{dataUser.rolName}}</mat-list-item>
+                </mat-list>
+            </mat-card-content>
+            <mat-card-footer class="example-card-footer">
+                <mat-chip-set aria-label="Chihuahua traits">
+                     
+                </mat-chip-set>
+            </mat-card-footer>
+        </mat-card>
+        <router-outlet></router-outlet>
     </mat-sidenav-content>
 </mat-sidenav-container>

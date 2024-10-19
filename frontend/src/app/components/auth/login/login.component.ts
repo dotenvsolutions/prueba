@@ -35,7 +35,7 @@ export class LoginComponent {
 
     this.http.loginUser(loginData).subscribe({
       next:(data) => {
-        this.router.navigate(['welcome'])
+        this.router.navigate(['/auth/welcome'])
       }, 
       error: (error) => {
         this.errorSession = true

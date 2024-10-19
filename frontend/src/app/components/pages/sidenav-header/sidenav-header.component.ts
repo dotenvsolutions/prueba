@@ -26,32 +26,39 @@ export class SidenavHeaderComponent implements OnInit {
     {
       icon:'dashboard',
       label:'Dashboard',
-      'route': 'dashboard'
+      'route': '/auth/dashboard'
     },
     {
       icon:'home',
       'label':'Inicio',
-      'route':'welcome'
+      'route':'/auth/welcome'
     },
     {
       icon:'settings',
       'label':'profile',
-      'route':'profile'
+      'route':'/auth/profile'
     },
     {
       icon:'logout',
       label:'Cerrar Sesion',
-      'route': 'logout'
+      'route': '/auth/logout'
     }
   ]
   filteredMenuItems: any[] = [];
+  userData: any = {}
   constructor(private accessService: AccessService) {}
 
   ngOnInit(): void {
-    this.accessService.currentUser$.subscribe(data=>{
-      this.dataUser = data
+    this.userData = localStorage.getItem('user')
+    if(this.userData !== null){
+      this.dataUser = JSON.parse(this.userData)
       this.filterMenuItems();
-    })
+    }else{
+      this.accessService.currentUser$.subscribe(data=>{
+        this.dataUser = data
+        this.filterMenuItems();
+      })
+    }
   }
 
   filterMenuItems(): void {

@@ -7,26 +7,11 @@ import { ProfileComponent } from './pages/profile/profile.component';
 
 export const routes: Routes = [
     {
-        path: "",
-        component: LoginComponent,
+        path:'auth',
+        loadChildren: () => import('./components/pages/pages.routes').then(m=>m.default)
     },
     {
-        path: "dashboard",
-        component: DashboardComponent,
-        canActivate:[sessionGuard]
-    },
-    {
-        path:"welcome",
-        component: WelcomeComponent,
-        canActivate:[sessionGuard]
-    },
-    {
-        path:"profile",
-        component: ProfileComponent,
-        canActivate:[sessionGuard]
-    },
-    {
-        path:"**",
+        path: '',
         component:LoginComponent
     }
 ];
