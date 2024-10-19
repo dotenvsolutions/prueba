@@ -1,11 +1,11 @@
 import { Router } from "express";
 
 import UserService from "../../application/user/UserService";
-
+import { verifyToken } from "../middlewares";
 const router = Router();
 const uService = new UserService()
 
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
     try {
         const getAll = await uService.getAll()
         if(!getAll.success){
@@ -18,7 +18,19 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.post('/create', async (req, res) => {
+router.post('/verifyToken', async(req, res) => {
+    try {
+        const verifyToken = await uService.fetchById(req.body.id)
+        if(!verifyToken.success){
+            return res.status(401).json(verifyToken)
+        }
+        res.status(200).json(verifyToken)
+    } catch (error) {
+        res.status(401).json({ success: false, error: error.message });
+    }
+})
+
+router.post('/create', verifyToken, async (req, res) => {
     const {username,password, email,names,lastnames, dni, birthday, phone1,phone2,address} = req.body
     try {
         const newUser = await uService.createNewUser(username,password, email,names, lastnames,dni,birthday,phone1,phone2,address)
@@ -49,7 +61,7 @@ router.post('/login', async (req, res) => {
     
 })
 
-router.put('/updateUser/:id', async (req, res) => {
+router.put('/updateUser/:id', verifyToken, async (req, res) => {
     const id = req.params.id
     const {username,password,rol} = req.body
     try {
@@ -66,7 +78,7 @@ router.put('/updateUser/:id', async (req, res) => {
     
 })
 
-router.delete('/delete/:id', async (req, res) => {
+router.delete('/delete/:id', verifyToken, async (req, res) => {
     const id = req.params.id
     try {
         const deleteUser = await uService.deleteUser(id)

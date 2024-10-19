@@ -1,3 +1,3 @@
 export const settings = {
-    apiURL : "http://localhost:5080/api/v1/"
+    apiURL : "http://localhost:5080/api/auth/"
 }

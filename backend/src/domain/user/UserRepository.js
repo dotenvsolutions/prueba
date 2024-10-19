@@ -19,6 +19,21 @@ export default class UserRepository {
         }
     }
 
+    async fetUserById(id){
+        try {
+            const user = await this.prisma.Usuarios.findFirst({
+                'where': { 
+                    'idUsuario': parseInt(id)
+                },
+            })
+            if(!user)
+                return {success:false,msg:'Usuario no existe o recientemente eliminado'}
+            return {'success':true, data: user}
+        } catch (error) {
+            return { success: false, msg: error.message };
+        }
+    }
+
     async store(data) {
         const {username,password, email,names, lastnames,dni,birthday,movil,line,address} = data
         

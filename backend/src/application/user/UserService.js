@@ -75,4 +75,8 @@ export default class UserService {
     async updateUser(id, username,password, rol){
         return await this.userRepository.update(id, username, password, rol)
     }
+
+    async fetchById(id) {
+        return await this.userRepository.fetUserById(id)
+    }
 }
