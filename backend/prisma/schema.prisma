@@ -30,7 +30,7 @@ model Usuarios {
 model Rol {
   idRol Int @id @default(autoincrement())
   RolName String @db.VarChar(50)
-  roles Rol_usuarios[]
+  usuarios Rol_usuarios[]
 }
 
 model Rol_usuarios {

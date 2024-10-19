@@ -40,7 +40,7 @@ export default class UserService {
     async loginUser(username,password, email){
 
         const dataUser = await this.userRepository.fetchByEmailOrUsername(email, username)
-        //console.log(dataUser)
+            //console.log(dataUser)
         if(!dataUser)
             return {'success': false, 'msg': 'Usuario no registrado'}
         const compare = await bcrypt.compare(password, dataUser.Password)

@@ -1,11 +1,11 @@
 import { Router } from "express";
 
 import UserService from "../../application/user/UserService";
-import { verifyToken } from "../middlewares";
+import {authJwt} from '../middlewares'
 const router = Router();
 const uService = new UserService()
 
-router.get('/', verifyToken, async (req, res) => {
+router.get('/', [authJwt.verifyToken], async (req, res) => {
     try {
         const getAll = await uService.getAll()
         if(!getAll.success){
@@ -30,7 +30,7 @@ router.post('/verifyToken', async(req, res) => {
     }
 })
 
-router.post('/create', verifyToken, async (req, res) => {
+router.post('/create', [authJwt.verifyToken], async (req, res) => {
     const {username,password, email,names,lastnames, dni, birthday, phone1,phone2,address} = req.body
     try {
         const newUser = await uService.createNewUser(username,password, email,names, lastnames,dni,birthday,phone1,phone2,address)
@@ -61,7 +61,7 @@ router.post('/login', async (req, res) => {
     
 })
 
-router.put('/updateUser/:id', verifyToken, async (req, res) => {
+router.put('/updateUser/:id', [authJwt.verifyToken], async (req, res) => {
     const id = req.params.id
     const {username,password,rol} = req.body
     try {
@@ -78,7 +78,7 @@ router.put('/updateUser/:id', verifyToken, async (req, res) => {
     
 })
 
-router.delete('/delete/:id', verifyToken, async (req, res) => {
+router.delete('/delete/:id', [authJwt.verifyToken], async (req, res) => {
     const id = req.params.id
     try {
         const deleteUser = await uService.deleteUser(id)

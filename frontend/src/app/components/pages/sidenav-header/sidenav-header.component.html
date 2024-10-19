@@ -1,0 +1,15 @@
+<div class="sidenav-header">
+    <img width="100px" height="100px" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg" alt="" class="src">
+    <div class="header-text">
+        <h2>Channel</h2>
+        <p>{{dataUser.name}} {{dataUser.lastname}}</p>
+    </div>
+    
+</div>
+<mat-nav-list>
+    <a mat-list-item  [routerLink]="item.route" *ngFor="let item of filteredMenuItems">
+        <mat-icon>{{item.icon}}</mat-icon>
+        <span>{{item.label}}</span>
+    </a>
+</mat-nav-list>
+ 

@@ -1,5 +1,5 @@
-import { verifyToken } from "./authMiddleware";
+import * as authJwt from "./authMiddleware";
 
 export {
-    verifyToken
+    authJwt
 }

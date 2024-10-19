@@ -130,7 +130,7 @@ export default class UserRepository {
             if(!registerSesionUser)
                 return {'success':false,'msg':'No se ha podido iniciar sesion'} 
 
-            return {'success':true, 'msg': 'Sesion Iniciada', 'token':jwToken}
+            return {'success':true, 'msg': 'Sesion Iniciada', 'token':jwToken, 'data': {'username':user.Username,name:user.personas.Nombres,lastname:user.personas.Apellidos,dni:user.personas.Identificacion,'email':user.Mail,'rol':user.roles[0].rolId,'rolName':user.roles[0].RolName}}
         } catch (error) {
             return { success: false, msg: error.message };
         }
@@ -142,14 +142,31 @@ export default class UserRepository {
                 'where': { 
                     'OR': [
                         {'Mail': email },
-                        {'Username': username}
+                        {'Username': email}
                     ]
                 },
+                include: {
+                    roles: true,
+                    personas:true
+                }
+                
+            })
+
+            const rol = await this.prisma.Rol.findFirst({
+                'where': {
+                    'idRol': parseInt(user.roles[0].rolId)
+                },
+                select: {
+                    RolName:true
+                }
             })
             
             if(!user){
                 return false
             }
+
+            user.roles[0].RolName = rol.RolName
+            
             return user;
         } catch (error) {
             //console.log(error)
