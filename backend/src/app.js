@@ -1,4 +1,4 @@
 import express from 'express';
-import config from '../libs/config'
+import config from './infraestructure/libs/config'
 const app = config(express())
 export default app;

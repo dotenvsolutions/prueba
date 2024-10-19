@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { Utilities } from "../libs/Utilities";
-import params from "../libs/params";
+import params from "../src/infraestructure/libs/params";
 import jwt from 'jsonwebtoken';
-import { ViewEntity } from "typeorm";
+ 
 
 const prisma = new PrismaClient()
 
@@ -45,7 +45,7 @@ const UserController = {
                 }
             })
 
-            if(parseInt(verifySession)>1){
+            if(parseInt(verifySession)>0){
                 return res.status(403).json({'success':false,'msg':'Usuario ya ha ingresado al sistema'})
             }
 

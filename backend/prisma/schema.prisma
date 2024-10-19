@@ -22,6 +22,7 @@ model Usuarios {
   SessionActive String ? @db.Char(2)
   Status String ? @db.Char(1)
   roles Rol_usuarios[]
+  attempts Int ? @default(0)
   personas Persona? 
   sesiones Sessions[] 
 }
