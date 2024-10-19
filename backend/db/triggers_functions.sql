@@ -1,27 +1,41 @@
-CREATE OR REPLACE FUNCTION log_session_user()
-  RETURNS TRIGGER 
-  LANGUAGE PLPGSQL
-  AS
-$$
+--EJECUTAR AL INCIO ANTES DE CREAR A LOS USUARIOS
+CREATE OR REPLACE FUNCTION create_roles_usuarios()
+RETURNS VOID 
+LANGUAGE plpgsql AS $$
 BEGIN
-  IF NOT EXISTS (
-        SELECT 1
-        FROM "Sessions"
-        WHERE "userId" = NEW.idUsuario
-    ) THEN
-        -- Si no existe, crea una nueva sesión con la fecha actual
-        INSERT INTO "Sessions" ("userId", "FechaInicio")
-        VALUES (NEW.idUsuario, NOW());
-    END IF;
-    
-    -- Retorna la fila que fue insertada/modificada en la tabla usuarios
-    RETURN NEW;
-
-RETURN NEW;
+	INSERT INTO "Rol" ("RolName") VALUES ('ADMINISTRADOR');
+  INSERT INTO "Rol" ("RolName") VALUES ('EJECUTIVO');
+  INSERT INTO "Rol" ("RolName") VALUES ('MANAGER');
+  INSERT INTO "Rol" ("RolName") VALUES ('OPERADOR');
 END;
-$$
+$$;
 
-CREATE TRIGGER crear_sesion_trigger
-AFTER INSERT ON "Usuarios"
-FOR EACH ROW
-EXECUTE FUNCTION crear_sesion_si_no_existe();
+
+DROP FUNCTION getAllUsers;
+CREATE OR REPLACE FUNCTION getAllUsers()
+RETURNS TABLE (
+    idUsuario INT,
+    Username VARCHAR,
+    Mail VARCHAR,
+    Status CHAR,
+    idPersona INT,
+    Nombres VARCHAR,
+    Apellidos VARCHAR,
+    Identificacion VARCHAR,
+    FechaNacimiento TIMESTAMP,
+    Movil VARCHAR,
+    Fijo VARCHAR,
+    direccion VARCHAR
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN 
+	RETURN QUERY	
+	SELECT u."idUsuario",u."Username",u."Mail",u."Status",p."idPersona",p."Nombres",p."Apellidos",
+	p."Identificacion",
+	p."FechaNacimiento",p."Movil",p."Fijo",p."direccion"
+	FROM "Usuarios" as u 
+	INNER JOIN "Persona" p ON u."idUsuario" = p."userId";
+END;
+$$;
+

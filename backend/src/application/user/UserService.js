@@ -6,6 +6,10 @@ export default class UserService {
         this.userRepository = new UserRepository();
     }
 
+    async getAll() {
+        return await this.userRepository.fetchAll()
+    }
+
     async createNewUser(username,password, email,names, lastnames,dni,birthday,movil,line,address) {
         const userData = new User(username,password, email,names, lastnames,dni,birthday,movil,line,address)
         
@@ -66,5 +70,9 @@ export default class UserService {
 
     async deleteUser(id) {
         return await this.userRepository.delUser(id)
+    }
+
+    async updateUser(id, username,password, rol){
+        return await this.userRepository.update(id, username, password, rol)
     }
 }

@@ -7,7 +7,18 @@ export default class UserRepository {
     constructor() {
         this.prisma = new PrismaClient()
     }
-  
+    
+    async fetchAll() {
+        try {
+            const result = await this.prisma.$queryRaw`
+                SELECT * FROM getallusers();
+            `;
+            return {'success':true, 'data': result};
+        } catch (error) {
+            return { success: false, msg: error.message };
+        }
+    }
+
     async store(data) {
         const {username,password, email,names, lastnames,dni,birthday,movil,line,address} = data
         
@@ -136,7 +147,7 @@ export default class UserRepository {
         try {
             const user = await this.prisma.Usuarios.update({
                 'where': { 
-                    'id': parseInt(data,id),
+                    'idUsuario': parseInt(data.id),
                     'data': {
                         'attempts': data.attempts,
                         'Status': data.Status
@@ -156,14 +167,46 @@ export default class UserRepository {
         try {
             const deleteUser = await this.prisma.Usuarios.delete({
                 where: {
-                    id: parseInt(id)
+                    idUsuario: parseInt(id)
                 },
             })
+
             if(!deleteUser){
                 return {'success':false,'msg':'No se han podido eliminar el usuario'} 
             }
 
             return {'success':true,'msg':'Usuario eliminado con exito'} 
+        } catch (error) {
+            console.log(error)
+            return { success: false, msg: error.message };
+        }
+    }
+
+    async updateUser(id, username,password, rol) {
+        try {
+            const roles = await this.prisma.Rol_usuarios.update({
+                'where': { 
+                    'userId': parseInt(id),
+                    'data': {
+                        'rolId': parseInt(rol),
+                    }
+                },
+            })
+    
+            const user = await this.prisma.Usuarios.update({
+                'where': { 
+                    'idUsuario': parseInt(id),
+                    'data': {
+                        'Username': username,
+                    }
+                },
+            })
+    
+            if(!user||!roles){
+                return {'success':false, msg:'No se ha podido actualizar datos del usuario'}
+            }
+    
+            return {'success':true, 'msg': 'Usuario actualizado con exito'};
         } catch (error) {
             return { success: false, msg: error.message };
         }
