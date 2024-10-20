@@ -96,5 +96,10 @@ export const Utilities = {
     },
     'comparePassword': async(password, recivePassword) => {
         return await bcrypt.compare(password, recivePassword)
-    }
+    },
+    'asyncForEach': async (array, callback) => {
+        for (let index = 0; index < array.length; index++) {
+            await callback(array[index], index, array);
+        }
+    },
 }

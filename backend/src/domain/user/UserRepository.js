@@ -296,7 +296,7 @@ export default class UserRepository {
 
     async storeMasiveUsers(data){
         if(data.length>0){
-            data.forEach(async e => {
+            Utilities.asyncForEach(data, async(e) => {
                 const checkUser =  await this.prisma.Usuarios.findUnique({
                     'where': { 
                         'Mail': e.EMAIL 
@@ -308,9 +308,10 @@ export default class UserRepository {
                             RolName:e.ROL
                         }
                     })
+                    
                     const newUser = await this.prisma.Usuarios.create({
                         'data': {
-                            'Username': e.USERNAME,
+                            'Username': e.USUARIO,
                             'Password': await Utilities.encrypUserPassword(e.PASSWORD),
                             'Mail': e.EMAIL,
                             'Status': 'A',
@@ -326,16 +327,17 @@ export default class UserRepository {
                             },
                             "roles": {
                                 'create': {
-                                    'rolId': !rol ? 1: rol.idRol
+                                    'rolId': !getRol ? 3: getRol.idRol
                                 }
                             }
                         }
                     })
+                    console.log(newUser)
                     if(!newUser){
                         return {'success':false, msg:'No se ha podido crear el nuevo usuario: '+e.NOMBRE}
                     }
-                }   
-            });
+                }  
+            })
             return {'success':true, 'msg': 'Usuario creado con exito' };
         }
     }
